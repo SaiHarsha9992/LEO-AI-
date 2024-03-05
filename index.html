@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LEO AI</title>
+    <link rel="icon" href="/public/images/logoleo.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <img src="/public/images/logoleo.png" alt="" width="200px" height="200px" class="logo1">
+        <div class="container col-xxl-8 px-4 py-5 main">
+            <img src="/public/images/logo2.png" alt="" width="200px" height="120px" class="logo">
+            
+          <div class="row flex-lg-row-reverse align-items-center g-5 py-5">
+            <div class="col-lg-6">
+              <div class="lead mb-4 position-relative bottom-50">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="red" class="bi bi-0-circle-fill para1" viewBox="0 0 16 16">
+                    <path d="M8 4.951c-1.008 0-1.629 1.09-1.629 2.895v.31c0 1.81.627 2.895 1.629 2.895s1.623-1.09 1.623-2.895v-.31c0-1.8-.621-2.895-1.623-2.895"/>
+                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-8.012 4.158c1.858 0 2.96-1.582 2.96-3.99V7.84c0-2.426-1.079-3.996-2.936-3.996-1.864 0-2.965 1.588-2.965 3.996v.328c0 2.42 1.09 3.99 2.941 3.99"/>
+                  </svg> 
+                <p class="lead" id="question" style="font-size: 25px;">Ask any queries</p>
+              </div>
+              <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="gold" class="bi bi-reply-all-fill para2" viewBox="0 0 16 16">
+                <path d="M8.021 11.9 3.453 8.62a.72.72 0 0 1 0-1.238L8.021 4.1a.716.716 0 0 1 1.079.619V6c1.5 0 6 0 7 8-2.5-4.5-7-4-7-4v1.281c0 .56-.606.898-1.079.62z"/>
+                <path d="M5.232 4.293a.5.5 0 0 1-.106.7L1.114 7.945l-.042.028a.147.147 0 0 0 0 .252l.042.028 4.012 2.954a.5.5 0 1 1-.593.805L.539 9.073a1.147 1.147 0 0 1 0-1.946l3.994-2.94a.5.5 0 0 1 .699.106"/>
+              </svg>
+              <div class="lead content">  
+                <p class="lead" id="answer1" >He can give reply</p>
+              </div>
+          
+            </div>
+            <div class="col-10 col-sm-8 col-lg-6 img1">
+              <div class="imaget">
+                <img src="/public/images/Untitled video - Made with Clipchamp (12).gif" class="d-block mx-lg-auto img-fluid" id="imagetag" alt="Bootstrap Themes" onclick="gifchange()" onmouseout="gifagchange()" ondblclick="gifcry()" width="500" height="500" loading="lazy">
+              
+              </div>
+              <div class="d-grid gap-2 d-md-flex justify-content-md-start start">
+                <button type="button" class="btn btn-danger btn-lg px-4" id="start">ASK LEO</button>
+              </div>
+            </div>
+            
+          </div>
+        </div>
+    
+    
+    <script>
+        const start = document.getElementById('start');
+        const question = document.getElementById('question');
+        const recognition = new webkitSpeechRecognition();
+        const image = document.getElementById('imagetag');
+
+
+
+        function gifcry(){
+          image.src = "/public/images/Untitled video - Made with Clipchamp (16).gif";
+        }
+
+
+
+        function gifchange(){
+          image.src = "/public/images/Untitled video - Made with Clipchamp (15).gif";
+        }
+
+
+
+        function gifagchange(){
+          image.src = "/public/images/Untitled video - Made with Clipchamp (12).gif";
+        }
+
+
+
+        window.addEventListener('beforeunload', () => {
+          if (speaking) {
+              speechSynthesis.cancel();
+          }
+        });
+
+
+
+        const inactivityTimeout = 30000;
+        let inactivityTimer;
+        let act = false;
+        let speaking = false;
+        let functionExecuting = false;
+
+
+
+        function changeimg(){
+          act = false;
+          if(!act && !speaking){
+            image.src = "/public/images/Untitled video - Made with Clipchamp (17).gif";
+          }
+        }
+
+
+
+        function resetTimer(){
+          clearTimeout(inactivityTimer);
+          image.src = "/public/images/Untitled video - Made with Clipchamp (12).gif";
+          
+          if(!functionExecuting){
+            inactivityTimer = setTimeout(changeimg, inactivityTimeout);
+
+          }  
+        }
+
+
+        document.addEventListener("keypress", () => {
+          if (!functionExecuting) {
+            resetTimer();
+          }
+        });
+
+        resetTimer();
+
+
+
+        start.addEventListener('click', ()=>  { 
+          functionExecuting = true;
+          act = true; 
+          recognition.start();
+          if (speaking) {
+              speechSynthesis.cancel();
+          }
+          question.innerHTML = "Ask any queries";
+          answer1.innerHTML = "He can give reply";
+          image.src = "/public/images/Untitled video - Made with Clipchamp (12).gif";
+        });  
+
+
+            const thingsSaid = [];
+            recognition.addEventListener("result",  async(event) =>{
+            speaking = true;
+            const text = event.results[0][0].transcript;
+            thingsSaid.push(text);
+            question.innerHTML = text;
+            functionExecuting = true;
+            console.log(text);
+            if(text.includes('open') && text.includes('instagram') || text.includes('Instagram') && text.includes('open')){
+              functionExecuting = true;
+                act = true;
+                window.open("https://instagram.com", "_blank");
+                const fin = "Opening instagram";
+                answer1.innerHTML = fin;
+                act = true;
+                functionExecuting = false;
+                await speak(fin);
+                console.log("ENDED");
+                
+            }
+            else if(text.includes('open') && text.includes('whatsapp') || text.includes('WhatsApp') && text.includes('open')){
+              act = true;  
+              functionExecuting = true;
+              window.open("https://web.whatsapp.com", "_blank");
+                const fin = "Opening whatsapp";
+                answer1.innerHTML = fin;
+                functionExecuting = false;
+                await speak(fin);
+                console.log("ENDED");
+                functionExecuting = false;
+            } 
+            else if(text.includes('open') && text.includes('linkedin') || text.includes('LinkedIn') && text.includes('open')){
+              act = true;
+              functionExecuting = true;
+                window.open("https://www.linkedin.com/in/kedarinadh-sai-harsha-gadu-7b39b8256/", "_blank");
+                const fin = "Opening linkedin";
+                answer1.innerHTML = fin;
+                functionExecuting = false;
+                await speak(fin);
+                console.log("ENDED");
+                functionExecuting = false;
+            } 
+            else if(text.includes('open') && text.includes('github') || text.includes('GitHub') && text.includes('open')){
+              act = true;  
+              functionExecuting = true;
+              window.open("https://github.com/SaiHarsha9992", "_blank");
+                const fin = "Opening github";
+                answer1.innerHTML = fin;
+                functionExecuting = false;
+                await speak(fin);
+                console.log("ENDED");
+                functionExecuting = false;
+            } 
+            else if(text.includes('open') && text.includes('Calculator') || text.includes('calculator') && text.includes('open')){
+              act = true;  
+              functionExecuting = true;
+              window.open("Calculator:///");
+                const fin = "Opening Calculator";
+                answer1.innerHTML = fin;
+                functionExecuting = false;
+                await speak(fin);
+                console.log("ENDED");
+                functionExecuting = false;
+            } 
+            else if(text.includes('What is the time')||text.includes('what is the time') || text.includes("what's the time now") || text.includes('Could you tell me what time it is')|| text.includes("What's the current time")){
+              act = true;  
+              functionExecuting = true;
+              const time = new Date().toLocaleString(undefined, {hour: "numeric", minute: "numeric"})
+                const fin = time;
+                answer1.innerHTML = fin;
+                functionExecuting = false;
+                await speak(fin);
+                
+                console.log("ENDED");
+                functionExecuting = false;
+            }
+            else if(text.includes('What is the date') || text.includes('what is the date') || text.includes('Could you tell me what date it is')|| text.includes("What's the current date")){
+              act = true;
+              functionExecuting = true;
+                const date = new Date().toLocaleString(undefined, {month: "short", day: "numeric"})
+                const fin = date;
+                answer1.innerHTML = fin;
+                functionExecuting = false;
+                await speak(fin);
+                console.log("ENDED");
+                functionExecuting = false;
+            }
+            else if(text.includes('bye') || text.includes('Good bye') || text.includes("bhai")){
+              act = true;
+              functionExecuting = true;
+              const fin = "Bye Harsha, thank you";
+              answer1.innerHTML = fin;
+              functionExecuting = false;
+              await speak(fin);
+              recognition.stop();
+              functionExecuting = false;
+            }
+            else {
+                act = true;
+                functionExecuting = true;
+                const response = await askOpenAi();
+                const answer = response.choices[0].message.content; 
+                answer1.innerHTML = answer;
+                thingsSaid.push(answer);
+                act = true;
+                functionExecuting = false;
+                await speak(answer);
+
+                recognition.start();
+                functionExecuting = false;
+            }
+            functionExecuting = true;
+
+
+            
+        });
+
+
+
+        const speak = (event) => 
+            new Promise((resolve) => {
+              functionExecuting = true;
+              act = true;
+                const utterence = new SpeechSynthesisUtterance(event); 
+                const voice = speechSynthesis.getVoices();
+                utterence.lang = 'en-IN';
+                utterence.voice = voice[1];
+                image.src = '/public/images/Untitled video - Made with Clipchamp (13).gif';
+                speechSynthesis.speak(utterence);
+                act = true;
+                functionExecuting = true;
+                utterence.onend = () => {
+                resolve(null);
+                image.src = '/public/images/Untitled video - Made with Clipchamp (12).gif';
+                speaking = false;
+                functionExecuting = false;
+              };
+              functionExecuting = false;
+        });
+
+
+
+        const askOpenAi = async () =>{
+          act = true;
+          functionExecuting = true;
+          image.src = '/public/images/Untitled video - Made with Clipchamp (11) (1).gif';
+          act = true;
+        return fetch('https://api.openai.com/v1/chat/completions', {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": 
+                    "Bearer ",
+            },
+            body: JSON.stringify({
+                "model": "gpt-3.5-turbo-0301",
+                "messages": [
+                    {
+                        "role" : "system", 
+                        "content" : "You are LEO ai assistant.Your user is Harsha  Keep your responses as terse and concise as possible."
+                    },
+                    {
+                        "role" : "user",
+                        "content": thingsSaid[thingsSaid.length -1]
+                    }
+                
+                ],
+            }),
+        })
+        .then(r=>r.json());
+        functionExecuting = false;
+        act = false;
+
+
+    };
+</script>
+</body>
+</html>
